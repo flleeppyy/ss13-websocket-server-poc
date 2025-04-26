@@ -32,17 +32,18 @@ wss.on("connection", (socket) => {
       
       if (!bpClient.connected || messageData.type !== "chat/message") return;
 
-      
       const parsedPayload = JSON.parse(messageData.payload);
 
       if (!parsedPayload?.content?.html) return;
 
       const message = parsedPayload.content.html.toLowerCase();
+      if (message.includes('<span class="prefix">OOC:</span>') || message.includes('<span class="ooc"')) return
       const matchedPhrase = phrases.phrases.find((phrase) =>
         message.match(phrase.regex)
       );
 
       if (matchedPhrase) {
+        console.log(`Vibe: ${matchedPhrase.name} (${matchedPhrase.type}) with ${matchedPhrase.intensity} for ${matchedPhrase.duration}ms`);
         for (const device of bpClient.devices) {
           try {
             if (matchedPhrase.type === "constant") {
